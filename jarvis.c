@@ -1,17 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>		/* memset */
-#include <unistd.h>		/* close */
-/*
- * Network 
- */
+#include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdarg.h>
-
-#define MSGSIZE 1024
-
+#include "jarvis.h"
 
 int connectionSocket;
 char sbuf[MSGSIZE];
@@ -40,7 +35,7 @@ void receiveData(){
     
     sbuf[numbytes] = '\0';
 
-    printf("<<%s\n", sbuf);
+    printf("<<%s", sbuf);
 
     if(strncmp(sbuf, "PING", 4) == 0){
         sendData("PONG");
@@ -81,29 +76,8 @@ void connectToServer(char *addr, char *port)
     freeaddrinfo(res);
 }
 
-int main()
-{
-    /*
-     * TODO: read from configuration file 
-     */
-    char *node = "chat.freenode.net";
-    char *port = "6667";
-    char *nick = "JarvisBOT";
-    char *channel = "#klodnicka16/10 letMeIn";
-
-    connectToServer(node, port);
-    /*
-     * loginToIRC(nick, channel) 
-     */
-
+void loginToIRC(char* nick, char*  nick_password, char*  channel){
     sendToServer("USER %s 0 0 :%s\r\n", nick, nick);
     sendToServer("NICK %s\r\n", nick);
     sendToServer("JOIN %s\r\n", channel);
-
-    while (1) {
-    	receiveData();
-    }
-
-
-    return 0;
 }
